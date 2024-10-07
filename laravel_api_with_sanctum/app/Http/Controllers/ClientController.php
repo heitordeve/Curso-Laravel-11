@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Services\ApiResponse;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -12,7 +13,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        return response()->json(Client::all(), 200);
+        return ApiResponse::success(Client::all());
     }
 
     /**
@@ -28,12 +29,11 @@ class ClientController extends Controller
 
         $client = Client::create($request->all());
 
-        return response()->json([
-            'message' => 'Client created successfuly',
-            'data' => $client
-        ],200
-    );
-
+        return ApiResponse::success([
+            'user'=> $client->name,
+            'email'=> $client->email,
+            'phone'=> $client->phone,
+        ]);
     }
 
     /**
@@ -44,9 +44,13 @@ class ClientController extends Controller
         $client = Client::find($id);
 
         if($client){
-            return response()->json($client, 200);
+            return ApiResponse::success([
+                'user'=> $client->name,
+                'email'=> $client->email,
+                'phone'=> $client->phone,
+            ]);
         }else{
-            return response()->json(['message' => 'Client not found'],404);
+            return ApiResponse::notFound();
         }
     }
 
@@ -64,12 +68,13 @@ class ClientController extends Controller
         $client = Client::find($id);
         if($client){
             $client->update($request->all());
-            return response()->json([
-                'message' => 'Client update successfully',
-                'data' => $client
-            ],200);
+            return ApiResponse::success([
+                'user'=> $client->name,
+                'email'=> $client->email,
+                'phone'=> $client->phone,
+            ]);
         }else{
-            return response()->json(['message' => 'Client not found'],404);
+            return ApiResponse::notFound();
         }
     }
 
@@ -85,7 +90,7 @@ class ClientController extends Controller
                 'message' => 'Client deleted successfully'
             ],200);
         }else{
-            return response()->json(['message' => 'Client not found'],404);
+            return ApiResponse::notFound();
         }
     }
 }
