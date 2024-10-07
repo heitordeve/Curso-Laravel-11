@@ -41,7 +41,13 @@ class ClientController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $client = Client::find($id);
+
+        if($client){
+            return response()->json($client, 200);
+        }else{
+            return response()->json(['message' => 'Client not found'],404);
+        }
     }
 
     /**
@@ -49,7 +55,22 @@ class ClientController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:clients,email' . $id,
+            'phone' => 'required'
+        ]);
+
+        $client = Client::find($id);
+        if($client){
+            $client->update($request->all());
+            return response()->json([
+                'message' => 'Client update successfully',
+                'data' => $client
+            ],200);
+        }else{
+            return response()->json(['message' => 'Client not found'],404);
+        }
     }
 
     /**
@@ -57,6 +78,14 @@ class ClientController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $client = Client::find($id);
+        if($client){
+            $client->delete();
+            return response()->json([
+                'message' => 'Client deleted successfully'
+            ],200);
+        }else{
+            return response()->json(['message' => 'Client not found'],404);
+        }
     }
 }
